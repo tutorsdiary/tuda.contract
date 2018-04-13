@@ -65,15 +65,6 @@ contract Ownable {
     }
 }
 
-contract Sellable {
-    bool public isSell = false;
-
-    modifier canSell() {
-        require(isSell);
-        _;
-    }
-}
-
 interface tokenRecipient { function receiveApproval(address _from, uint256 _value, address _token, bytes _extraData) external; }
 
 contract TokenERC20 {
@@ -103,11 +94,6 @@ contract TokenERC20 {
     /**
      * modifier
      */
-    modifier onlyPayloadSize(uint256 size) {
-        assert(msg.data.length < size + 4);
-        _;
-    }
-
     modifier validAddress {
         assert(0x0 != msg.sender);
         _;
@@ -160,7 +146,7 @@ contract TokenERC20 {
      * @param _to The address of the recipient
      * @param _value the amount to send
      */
-    function transfer(address _to, uint256 _value) validAddress onlyPayloadSize(2 * 32) public {
+    function transfer(address _to, uint256 _value) validAddress public {
         _transfer(msg.sender, _to, _value);
     }
 
@@ -173,7 +159,7 @@ contract TokenERC20 {
      * @param _to The address of the recipient
      * @param _value the amount to send
      */
-    function transferFrom(address _from, address _to, uint256 _value) validAddress onlyPayloadSize(3 * 32) public returns (bool success) {
+    function transferFrom(address _from, address _to, uint256 _value) validAddress public returns (bool success) {
         require(_to != 0x0);
         require(balanceOf[_from] >= _value);
         require(_value <= allowance[_from][msg.sender]);     // Check allowance
@@ -251,7 +237,7 @@ contract TokenERC20 {
     }
 }
 
-contract TudaToken is Sellable, Ownable, TokenERC20 {
+contract TudaToken is Ownable, TokenERC20 {
 
 	uint256 public sellPrice;
 	uint256 public buyPrice;
@@ -303,38 +289,10 @@ contract TudaToken is Sellable, Ownable, TokenERC20 {
         emit FrozenFunds(target, freeze);
     }
 
-	/// @notice Set avail buy & sell
-	function setSell() public onlyOwner returns (bool) {
-        isSell = true;
-        return true;
-    }
+	/// @notice Kill contract by myself
+	function kill() onlyOwner public {
+		require(owner == msg.sender);
 
-	/// @notice Unset avail buy & sell
-    function unsetSell() public onlyOwner returns (bool) {
-        isSell = false;
-        return false;
-    }
-
-    /// @notice Allow users to buy tokens for `newBuyPrice` eth and sell tokens for `newSellPrice` eth
-    /// @param newSellPrice Price the users can sell to the contract
-    /// @param newBuyPrice Price users can buy from the contract
-    function setPrices(uint256 newSellPrice, uint256 newBuyPrice) canSell onlyOwner public {
-        sellPrice = newSellPrice;
-        buyPrice = newBuyPrice;
-    }
-
-    /// @notice Buy tokens from contract by sending ether
-    function buy() payable canSell public {
-        uint amount = msg.value / buyPrice;               // calculates the amount
-        _transfer(this, msg.sender, amount);              // makes the transfers
-    }
-
-    /// @notice Sell `amount` tokens to contract
-    /// @param amount amount of tokens to be sold
-    function sell(uint256 amount) canSell public {
-        require(address(this).balance >= amount * sellPrice);      // checks if the contract has enough ether to buy
-
-        _transfer(msg.sender, this, amount);              // makes the transfers
-        msg.sender.transfer(amount * sellPrice);          // sends ether to the seller. It's important to do this last to avoid recursion attacks
-    }
+		selfdestruct(owner);
+	}
 }
