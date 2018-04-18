@@ -2,23 +2,23 @@ pragma solidity ^0.4.16;
 import "github.com/oraclize/ethereum-api/oraclizeAPI.sol";
 
 contract Ownable {
-	address public owner;
-	event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+    address public owner;
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
-	function Ownable() public {
-		owner = msg.sender;
-	}
+    function Ownable() public {
+        owner = msg.sender;
+    }
 
-	modifier onlyOwner {
-		require(msg.sender == owner);
-		_;
-	}
+    modifier onlyOwner {
+        require(msg.sender == owner);
+        _;
+    }
 
-	function transferOwnership(address newOwner) onlyOwner public {
-		require(newOwner != address(0));
-		emit OwnershipTransferred(owner, newOwner);
-		owner = newOwner;
-	}
+    function transferOwnership(address newOwner) onlyOwner public {
+        require(newOwner != address(0));
+        emit OwnershipTransferred(owner, newOwner);
+        owner = newOwner;
+    }
 }
 
 interface token { function transfer(address receiver, uint amount) external; }
@@ -34,14 +34,14 @@ contract Crowdsale is usingOraclize {
     bool fundingGoalReached = false;
     bool crowdsaleClosed = false;
 
-	uint ethUsd;			// usd price per ether
+    uint ethUsd;			// usd price per ether
     uint discountRate;
     uint premiumRate;
 
     // 투자자 목록
     struct investorInfo {
         uint amount;			// total token amount
-		uint sendCount;			// send token count (last count is four...)
+        uint sendCount;			// send token count (last count is four...)
         uint discountRate;
         uint premiumRate;
         uint investDate;
@@ -66,7 +66,7 @@ contract Crowdsale is usingOraclize {
         uint ethDiscountRate,
         uint tokenPremiumRate
     ) public {
-		beneficiary = ifSuccessfulSendTo;
+        beneficiary = ifSuccessfulSendTo;
         fundingGoal = fundingGoalInEthers * 1 ether;
         deadline = now + durationInMinutes * 1 minutes;
         price = tokenCostOfEachEther * 10;					// 10 token per ether
@@ -102,7 +102,7 @@ contract Crowdsale is usingOraclize {
 
         // cashbag eth from owner to msg.sender by discountRate
         emit Transfer(0, this, cashbagEthAmount);
-		emit Transfer(this, msg.sender, cashbagEthAmount);
+        emit Transfer(this, msg.sender, cashbagEthAmount);
     }
 
     modifier afterDeadline() {
@@ -149,54 +149,54 @@ contract Crowdsale is usingOraclize {
         }
 
         if (fundingGoalReached) {
-			oraclize_query("WolframAlpha", "1 eth to usd");
+            oraclize_query("WolframAlpha", "1 eth to usd");
         }
     }
 
-	function __callback(bytes32 myid, string result) {
+    function __callback(bytes32 myid, string result) {
         if (msg.sender != oraclize_cbAddress()) {
-			revert();
-		}
+            revert();
+        }
 
-		// usd per ether
+        // usd per ether
         ethUsd = result;
 
-		if (beneficiary.send(amountRaised)) {
-			// token transfer to investor's address
-			uint len = investorAddress.length;
-			for (uint8 i=0; i<len; i++){
-				investorInfo investor = investors[investorAddress[i]];
-				uint totalEthAmount = investor.amount;
-				uint sendCount = investor.sendCount;
-				uint tokenPremiumRate = investor.premiumRate;
-				uint tokenInvestDate = investor.investDate;
+        if (beneficiary.send(amountRaised)) {
+            // token transfer to investor's address
+            uint len = investorAddress.length;
+            for (uint8 i=0; i<len; i++){
+                investorInfo investor = investors[investorAddress[i]];
+                uint totalEthAmount = investor.amount;
+                uint sendCount = investor.sendCount;
+                uint tokenPremiumRate = investor.premiumRate;
+                uint tokenInvestDate = investor.investDate;
 
-				// check send token date
-				if (now >= (tokenInvestDate + ((sendCount + 1) * 30 days)) {
-					// send 25% amount
-					uint ethAmount = totalEthAmount / 4;
+                // check send token date
+                if (now >= (tokenInvestDate + ((sendCount + 1) * 30 days)) {
+                    // send 25% amount
+                    uint ethAmount = totalEthAmount / 4;
 
-					if (investor.sendCount < 4) {
-						uint256 tokenAmount = (ethAmount * price * ethUsd) * (1 + (tokenPremiumRate / 100));
-						tokenReward.transfer(investorAddress[i], tokenAmount);
+                    if (investor.sendCount < 4) {
+                        uint256 tokenAmount = (ethAmount * price * ethUsd) * (1 + (tokenPremiumRate / 100));
+                        tokenReward.transfer(investorAddress[i], tokenAmount);
 
-						investor.sendCount += 1;
-					}
-				}
-			}
+                        investor.sendCount += 1;
+                    }
+                }
+            }
 
-			// eth transfer to beneficiary
-			emit FundTransfer(beneficiary, amountRaised, false);
-		} else {
-			//If we fail to send the funds to beneficiary, unlock funders balance
-			fundingGoalReached = false;
-		}
+            // eth transfer to beneficiary
+            emit FundTransfer(beneficiary, amountRaised, false);
+        } else {
+            //If we fail to send the funds to beneficiary, unlock funders balance
+            fundingGoalReached = false;
+        }
     }
 
-	/// @notice Kill contract by myself
-	function kill() onlyOwner public {
-		require(owner == msg.sender);
+    /// @notice Kill contract by myself
+    function kill() onlyOwner public {
+        require(owner == msg.sender);
 
-		selfdestruct(owner);
-	}
+        selfdestruct(owner);
+    }
 }
