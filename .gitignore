@@ -1,0 +1,8 @@
+node_modules
+build
+.idea
+.idea
+.idea/misc.xml
+*.iml
+*.tmp
+*.swp
