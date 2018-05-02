@@ -3,25 +3,23 @@ pragma solidity ^0.4.21;
 import "openzeppelin-solidity/contracts/token/ERC20/StandardBurnableToken.sol";
 import 'openzeppelin-solidity/contracts/token/ERC827/ERC827Token.sol';
 import "openzeppelin-solidity/contracts/lifecycle/Pausable.sol";
-import "../../Trait/Frozenlist.sol";
+import "./Frozenlist.sol";
 
-contract TudaToken is ERC827Token, Pausable, Frozenlist, StandardBurnableToken {
+contract TudaToken is Pausable, ERC827Token, Frozenlist, StandardBurnableToken {
 
     string constant public name = "TudaToken"; // solium-disable-line uppercase
     string constant public symbol = "TUDA"; // solium-disable-line uppercase
     uint8 constant public decimals = 8; // solium-disable-line uppercase
 
+    uint256 public constant INITIAL_SUPPLY = 60000000 * (10 ** uint256(decimals));
+
     /**
      * @dev Constructor that gives msg.sender all of existing tokens.
      */
-    function TudaToken(uint256 _initSupply) public {
-        require(_initSupply < 0);
-
-        totalSupply_ = _initSupply * (10 ** uint256(decimals));
-        if (totalSupply_ > 0) {
-            balances[msg.sender] = totalSupply_;
-            emit Transfer(0x0, msg.sender, totalSupply_);
-        }
+    function TudaToken() public {
+        totalSupply_ = INITIAL_SUPPLY;
+        balances[msg.sender] = INITIAL_SUPPLY;
+        emit Transfer(0x0, msg.sender, INITIAL_SUPPLY);
     }
 
     /**
