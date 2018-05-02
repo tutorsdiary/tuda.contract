@@ -1,5 +1,5 @@
-pragma solidity ^0.4.16;
-import "github.com/oraclize/ethereum-api/oraclizeAPI.sol";
+pragma solidity ^0.4.21;
+import "../../installed_contracts/oraclize-api/contracts/usingOraclize.sol";
 
 contract Ownable {
     address public owner;
@@ -23,7 +23,7 @@ contract Ownable {
 
 interface token { function transfer(address receiver, uint amount) external; }
 
-contract Crowdsale is usingOraclize {
+contract Crowdsale is Ownable, usingOraclize {
     address public beneficiary;
     uint public fundingGoal;
     uint public amountRaised;
@@ -63,7 +63,7 @@ contract Crowdsale is usingOraclize {
         uint durationInMinutes,
         uint tokenCostOfEachEther,
         address addressOfTokenUsedAsReward,
-        uint ethDiscountRate,
+        uint tokenDiscountRate,
         uint tokenPremiumRate
     ) public {
         beneficiary = ifSuccessfulSendTo;
@@ -101,8 +101,8 @@ contract Crowdsale is usingOraclize {
         emit FundTransfer(msg.sender, investAmount, true);
 
         // cashbag eth from owner to msg.sender by discountRate
-        emit Transfer(0, this, cashbagEthAmount);
-        emit Transfer(this, msg.sender, cashbagEthAmount);
+//        emit Transfer(0, this, cashbagEthAmount);
+//        emit Transfer(this, msg.sender, cashbagEthAmount);
     }
 
     modifier afterDeadline() {
@@ -142,7 +142,7 @@ contract Crowdsale is usingOraclize {
                     if (investorAddress[i].send(ethAmount)) {
                         emit FundTransfer(investorAddress[i], ethAmount, false);
                     } else {
-                        balanceOf[investorAddress[i]] = amount;
+                        balanceOf[investorAddress[i]] = ethAmount;
                     }
                 }
             }
@@ -172,7 +172,7 @@ contract Crowdsale is usingOraclize {
                 uint tokenInvestDate = investor.investDate;
 
                 // check send token date
-                if (now >= (tokenInvestDate + ((sendCount + 1) * 30 days)) {
+                if (now >= (tokenInvestDate + ((sendCount + 1) * 30 days))) {
                     // send 25% amount
                     uint ethAmount = totalEthAmount / 4;
 

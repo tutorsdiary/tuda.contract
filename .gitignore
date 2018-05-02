@@ -6,3 +6,4 @@ build
 *.iml
 *.tmp
 *.swp
+installed_contracts
