@@ -11,7 +11,7 @@ contract TudaToken is Pausable, ERC827Token, Frozenlist, StandardBurnableToken {
     string constant public symbol = "TUDA"; // solium-disable-line uppercase
     uint8 constant public decimals = 8; // solium-disable-line uppercase
 
-    uint256 public constant INITIAL_SUPPLY = 60000000 * (10 ** uint256(decimals));
+    uint256 public constant INITIAL_SUPPLY = 6000000000 * (10 ** uint256(decimals));
 
     /**
      * @dev Constructor that gives msg.sender all of existing tokens.
