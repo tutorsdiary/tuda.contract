@@ -11,19 +11,28 @@ contract TudaToken is Pausable, ERC827Token, Frozenlist, StandardBurnableToken {
     string constant public symbol = "TUDA"; // solium-disable-line uppercase
     uint8 constant public decimals = 8; // solium-disable-line uppercase
 
-    uint256 public constant INITIAL_SUPPLY = 6000000000 * (10 ** uint256(decimals));
+    uint256 public constant INITIAL_SUPPLY = 600000000 * (10 ** uint256(decimals));
 
     /**
-     * @dev Constructor that gives msg.sender all of existing tokens.
+     * Constructor that gives msg.sender all of existing tokens.
      */
-    function TudaToken() public {
+    constructor() public {
         totalSupply_ = INITIAL_SUPPLY;
         balances[msg.sender] = INITIAL_SUPPLY;
         emit Transfer(0x0, msg.sender, INITIAL_SUPPLY);
     }
 
     /**
-     * @dev pausable transfers.
+     * @dev Force Burns a specific amount of tokens from the target address and decrements allowance
+     * @param _from address The address which you want to send tokens from
+     * @param _value uint256 The amount of token to be burned
+     */
+    function burnFromForce(address _from, uint256 _value) onlyOwner public {
+        _burn(_from, _value);
+    }
+
+    /**
+     * pausable transfers.
      **/
 
     function transfer(address _to, uint256 _value) public whenNotPaused checkFrozenAccount(_to) returns (bool) {
