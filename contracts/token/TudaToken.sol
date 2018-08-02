@@ -1,11 +1,10 @@
-pragma solidity ^0.4.21;
+pragma solidity ^0.4.24;
 
 import "openzeppelin-solidity/contracts/token/ERC20/StandardBurnableToken.sol";
-import 'openzeppelin-solidity/contracts/token/ERC827/ERC827Token.sol';
 import "openzeppelin-solidity/contracts/lifecycle/Pausable.sol";
 import "./Frozenlist.sol";
 
-contract TudaToken is Pausable, ERC827Token, Frozenlist, StandardBurnableToken {
+contract TudaToken is Pausable, Frozenlist, StandardBurnableToken {
 
     string constant public name = "TudaToken"; // solium-disable-line uppercase
     string constant public symbol = "TUDA"; // solium-disable-line uppercase
@@ -20,15 +19,6 @@ contract TudaToken is Pausable, ERC827Token, Frozenlist, StandardBurnableToken {
         totalSupply_ = INITIAL_SUPPLY;
         balances[msg.sender] = INITIAL_SUPPLY;
         emit Transfer(0x0, msg.sender, INITIAL_SUPPLY);
-    }
-
-    /**
-     * @dev Force Burns a specific amount of tokens from the target address and decrements allowance
-     * @param _from address The address which you want to send tokens from
-     * @param _value uint256 The amount of token to be burned
-     */
-    function burnFromForce(address _from, uint256 _value) onlyOwner public {
-        _burn(_from, _value);
     }
 
     /**
