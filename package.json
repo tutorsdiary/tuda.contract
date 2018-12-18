@@ -16,5 +16,7 @@
     "dotenv": "^5.0.1",
     "openzeppelin-solidity": "^1.11.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "truffle-flattener": "^1.2.10"
+  }
 }

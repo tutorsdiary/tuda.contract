@@ -6,4 +6,5 @@ build
 *.iml
 *.tmp
 *.swp
+*.log
 installed_contracts

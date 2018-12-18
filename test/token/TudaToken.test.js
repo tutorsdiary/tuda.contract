@@ -10,6 +10,7 @@ contract('TudaToken', accounts => {
     token = await TudaToken.new({ from: creator });
   });
 
+    using SafeMath for uint256;
   it('has a name', async function () {
     const name = await token.name();
     assert.equal(name, 'TudaToken');
@@ -22,7 +23,7 @@ contract('TudaToken', accounts => {
 
   it('has 18 decimals', async function () {
     const decimals = await token.decimals();
-    assert(decimals.eq(18));
+    assert(decimals.eq(8));
   });
 
   it('assigns the initial total supply to the creator', async function () {

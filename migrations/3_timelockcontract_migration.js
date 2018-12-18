@@ -1,8 +1,6 @@
-var sendlockedtokencontract = artifacts.require("./SendLockedTokenContract.sol");
+var multiTimelockTokenContract = artifacts.require("./MultiTimeLockTokenContract.sol");
 var TudaToken = artifacts.require("./TudaToken.sol");
 
-var token = TudaToken.address;
-
 module.exports = function(deployer) {
-  deployer.deploy(sendlockedtokencontract, token);
+  deployer.deploy(multiTimelockTokenContract, TudaToken.address);
 };

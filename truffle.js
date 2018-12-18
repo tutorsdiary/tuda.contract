@@ -1,18 +1,14 @@
 module.exports = {
   // See <http://truffleframework.com/docs/advanced/configuration>
   // to customize your Truffle configuration!
-  //rpc: {
-  //  host: 'localhost',
-  //  port: '8545'
-  //},
   networks: {
     live: {
       host: "localhost",
       port: 9545,
       network_id: "1",
-      from: "0x82280bd6b6f3806bd5b28a54fd89df941de800b8",
-      gas: 2500000,
-      gasPrice: 10000000000
+      from: "0x82280bd6b6f3806bd5b28a54fd89df941de800b8", // mainNet manage account address
+      gas: 3000000, // gas Limit
+      gasPrice: 3000000000 // gas Price: 2~3Gwei
     },
     development: {
       host: "127.0.0.1",
